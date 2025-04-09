@@ -10,7 +10,26 @@ export default function TVSeriesForm({ onAdd }) {
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onAdd({ id: nanoid(), title, genre, status, link, imageLink})
+
+        if (link.trim()) {
+            try {
+                new URL(link)
+            } catch {
+                alert('Please enter a valid URL for the Link field.')
+                return
+            }
+        }
+
+        if (imageLink.trim()) {
+            try {
+                new URL(imageLink)
+            } catch {
+                alert('Please enter a valid URL for the Image Link field.')
+                return
+            }
+        }
+
+        onAdd({ id: nanoid(), title, genre, status, link, imageLink })
         setTitle('')
         setGenre('')
         setLink('')
