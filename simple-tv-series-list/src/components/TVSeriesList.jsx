@@ -1,10 +1,10 @@
 import defaultImage from '../assets/default-series-image.jpg';
 
-export default function TVSeriesList({ series, onRate, onRemove }) {
+export default function TVSeriesList({ series, onRate, onRemove, onEdit }) {
     const watchedSeries = series.filter(s => s.status === 'Watched');
     const otherSeries = series.filter(s => s.status !== 'Watched');
 
-    const SeriesCard = ({ series: s, onRemove }) => (
+    const SeriesCard = ({ series: s, onRate, onRemove, onEdit }) => (
         <div key={s.id} className="p-4 border rounded shadow dark:border-zinc-700 dark:bg-zinc-800">
             <div className="flex justify-between items-start">
                 <h2 className="text-xl font-semibold">{s.title}</h2>
@@ -24,7 +24,7 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
                     </span>
                 )}
             </div>
-            <div className="mt-2 w-full h-[300px] overflow-hidden rounded">
+            <div className="mt-2 w-full h-64 overflow-hidden rounded">
                 <img
                     src={s.imageLink || defaultImage}
                     alt={`${s.title} image`}
@@ -49,7 +49,18 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
                 </div>
             )}
             <div className="flex gap-2 mt-2">
-                <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
+                <button
+                    onClick={() => onEdit(s)}
+                    className="bg-blue-500 hover:bg-blue-600 px-3 py-1 text-white rounded transition"
+                >
+                    Edit
+                </button>
+                <button
+                    onClick={() => onRemove(s.id)}
+                    className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition"
+                >
+                    Remove
+                </button>
             </div>
         </div>
     );
@@ -63,7 +74,7 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
                     </h2>
                     <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                         {watchedSeries.map(s => (
-                            <SeriesCard key={s.id} series={s} onRemove={onRemove} />
+                            <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
                         ))}
                     </div>
                 </div>
@@ -76,7 +87,7 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
                     </h2>
                     <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
                         {otherSeries.map(s => (
-                            <SeriesCard key={s.id} series={s} onRemove={onRemove} />
+                            <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
                         ))}
                     </div>
                 </div>
