@@ -45,7 +45,7 @@ A responsive React application for tracking your favorite TV series. This app al
 
 1. Clone this repository
 ```
-git clone https://github.com/yourusername/tv-series-tracker.git
+git clone https://github.com/mirrerror/SimpleTVSeriesList.git
 ```
 
 2. Navigate to the project directory
