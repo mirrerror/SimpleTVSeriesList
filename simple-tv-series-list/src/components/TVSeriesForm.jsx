@@ -96,7 +96,9 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             </h2>
             <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
                 <div className="space-y-1">
-                    <label className="text-sm font-medium">Title*</label>
+                    <label className="text-sm font-medium">
+                        Title <span className="text-red-500">*</span>
+                    </label>
                     <input
                         type="text" placeholder="Title" required
                         value={title} onChange={e => setTitle(e.target.value)}
@@ -139,7 +141,12 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                     </select>
                 </div>
             </div>
-            <div className="flex gap-2 mt-3">
+            <div className="mt-1 mb-2">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                    <span className="text-red-500">*</span> indicates required field
+                </p>
+            </div>
+            <div className="flex gap-2 mt-2">
                 <button
                     type="submit"
                     className="px-3 sm:px-4 py-1.5 sm:py-2 bg-fuchsia-700 text-white rounded hover:bg-amber-500 text-sm sm:text-base font-medium transition"
