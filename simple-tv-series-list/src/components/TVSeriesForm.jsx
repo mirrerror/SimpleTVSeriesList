@@ -19,16 +19,16 @@ export default function TVSeriesForm({ onAdd }) {
                 <input
                     type="text" placeholder="Title" required
                     value={title} onChange={e => setTitle(e.target.value)}
-                    className="p-2 rounded border"
+                    className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                 />
                 <input
                     type="text" placeholder="Genre"
                     value={genre} onChange={e => setGenre(e.target.value)}
-                    className="p-2 rounded border"
+                    className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                 />
                 <select
                     value={status} onChange={e => setStatus(e.target.value)}
-                    className="p-2 rounded border"
+                    className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                 >
                     <option>Watching</option>
                     <option>Watched</option>
