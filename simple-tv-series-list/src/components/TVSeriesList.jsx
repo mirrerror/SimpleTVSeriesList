@@ -7,15 +7,24 @@ export default function TVSeriesList({ series, onRemove }) {
             <div className="flex justify-between items-start">
                 <h2 className="text-xl font-semibold">{s.title}</h2>
                 {s.status === 'Watched' && (
-                    <span className="bg-green-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                        ✓ Watched
+                    <span className="bg-fuchsia-700 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        ✅ Watched
+                    </span>
+                )}
+                {s.status === 'Watching' && (
+                    <span className="bg-fuchsia-700 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        📺 Watching
+                    </span>
+                )}
+                {s.status === 'Plan to Watch' && (
+                    <span className="bg-fuchsia-700 text-white px-2 py-1 rounded-full text-xs font-bold">
+                        ⌛ Plan to watch
                     </span>
                 )}
             </div>
             <p>🎭 {s.genre}</p>
-            {s.status !== 'Watched' && <p>📺 {s.status}</p>}
-            {s.link && <p>{s.link}</p>}
-            {s.imageLink && <p>{s.imageLink}</p>}
+            {s.link && <p>🔗 {s.link}</p>}
+            {s.imageLink && <p>🔗 {s.imageLink}</p>}
             <div className="flex gap-2 mt-2">
                 <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
             </div>
