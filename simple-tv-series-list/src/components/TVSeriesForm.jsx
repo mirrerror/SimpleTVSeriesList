@@ -4,13 +4,17 @@ import { nanoid } from 'nanoid'
 export default function TVSeriesForm({ onAdd }) {
     const [title, setTitle] = useState('')
     const [genre, setGenre] = useState('')
+    const [link, setLink] = useState('')
+    const [imageLink, setImageLink] = useState('')
     const [status, setStatus] = useState('Watching')
 
     const handleSubmit = (e) => {
         e.preventDefault()
-        onAdd({ id: nanoid(), title, genre, status, likes: 0 })
+        onAdd({ id: nanoid(), title, genre, status, link, imageLink})
         setTitle('')
         setGenre('')
+        setLink('')
+        setImageLink('')
     }
 
     return (
@@ -24,6 +28,16 @@ export default function TVSeriesForm({ onAdd }) {
                 <input
                     type="text" placeholder="Genre"
                     value={genre} onChange={e => setGenre(e.target.value)}
+                    className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                />
+                <input
+                    type="text" placeholder="Link"
+                    value={link} onChange={e => setLink(e.target.value)}
+                    className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                />
+                <input
+                    type="text" placeholder="Image Link"
+                    value={imageLink} onChange={e => setImageLink(e.target.value)}
                     className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
                 />
                 <select
