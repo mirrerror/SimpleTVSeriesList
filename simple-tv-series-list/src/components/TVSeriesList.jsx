@@ -113,6 +113,8 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
         );
     };
 
+    const noSeriesFound = filteredSeries.length === 0;
+
     return (
         <div className="space-y-4 sm:space-y-6">
             <div className="mb-4">
@@ -141,36 +143,38 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                 </select>
             </div>
 
-            {watchedSeries.length > 0 && (
-                <div>
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
-                        Watched Series
-                    </h2>
-                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        {watchedSeries.map(s => (
-                            <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {otherSeries.length > 0 && (
-                <div>
-                    <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
-                        Currently Watching & Plan to Watch
-                    </h2>
-                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        {otherSeries.map(s => (
-                            <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {series.length === 0 && (
+            {noSeriesFound ? (
                 <div className="text-center p-6 border rounded dark:border-zinc-700">
-                    <p className="text-gray-500 dark:text-gray-400">No TV series added yet</p>
+                    <p className="text-gray-500 dark:text-gray-400">No TV series found for the selected filters</p>
                 </div>
+            ) : (
+                <>
+                    {watchedSeries.length > 0 && (
+                        <div>
+                            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
+                                Watched Series
+                            </h2>
+                            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                {watchedSeries.map(s => (
+                                    <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {otherSeries.length > 0 && (
+                        <div>
+                            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
+                                Currently Watching & Plan to Watch
+                            </h2>
+                            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                {otherSeries.map(s => (
+                                    <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </>
             )}
         </div>
     );
