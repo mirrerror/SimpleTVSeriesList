@@ -9,6 +9,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
     const [status, setStatus] = useState('Watching')
     const [isEditing, setIsEditing] = useState(false)
     const [editId, setEditId] = useState(null)
+    const [errors, setErrors] = useState({})
 
     useEffect(() => {
         if (editSeries) {
@@ -30,15 +31,18 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         setStatus('Watching')
         setIsEditing(false)
         setEditId(null)
+        setErrors({})
     }
 
     const validateUrls = () => {
+        let result = true
+
         if (link.trim()) {
             try {
                 new URL(link)
             } catch {
-                alert('Please enter a valid URL for the Link field.')
-                return false
+                setErrors(prev => ({ ...prev, link: 'Please enter a valid URL for the Link field.' }))
+                result = false
             }
         }
 
@@ -46,15 +50,63 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             try {
                 new URL(imageLink)
             } catch {
-                alert('Please enter a valid URL for the Image Link field.')
-                return false
+                setErrors(prev => ({ ...prev, imageLink: 'Please enter a valid URL for the Image Link field.' }))
+                result = false
             }
         }
-        return true
+
+        return result
+    }
+
+    const validateField = (field, value) => {
+        let newErrors = { ...errors }
+
+        switch (field) {
+            case 'title':
+                if (!value.trim()) {
+                    newErrors.title = 'Title is required.'
+                } else {
+                    delete newErrors.title
+                }
+                break
+            case 'link':
+                if (value.trim()) {
+                    try {
+                        new URL(value)
+                        delete newErrors.link
+                    } catch {
+                        newErrors.link = 'Please enter a valid URL for the Link field.'
+                    }
+                } else {
+                    delete newErrors.link
+                }
+                break
+            case 'imageLink':
+                if (value.trim()) {
+                    try {
+                        new URL(value)
+                        delete newErrors.imageLink
+                    } catch {
+                        newErrors.imageLink = 'Please enter a valid URL for the Image Link field.'
+                    }
+                } else {
+                    delete newErrors.imageLink
+                }
+                break
+            default:
+                break
+        }
+
+        setErrors(newErrors)
     }
 
     const handleSubmit = (e) => {
         e.preventDefault()
+
+        if (!title.trim()) {
+            setErrors(prev => ({ ...prev, title: 'Title is required.' }))
+            return
+        }
 
         if (!validateUrls()) return
 
@@ -100,34 +152,38 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                         Title <span className="text-red-500">*</span>
                     </label>
                     <input
-                        type="text" placeholder="Title" required
-                        value={title} onChange={e => setTitle(e.target.value)}
-                        className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
+                        type="text" placeholder="Title"
+                        value={title} onChange={(e) => { setTitle(e.target.value); validateField('title', e.target.value) }}
+                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.title ? '!border-red-500' : 'border-zinc-300'}`}
                     />
+                    {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
                 </div>
                 <div className="space-y-1">
                     <label className="text-sm font-medium">Genre</label>
                     <input
                         type="text" placeholder="Genre"
-                        value={genre} onChange={e => setGenre(e.target.value)}
-                        className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
+                        value={genre} onChange={(e) => { setGenre(e.target.value); validateField('genre', e.target.value) }}
+                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.genre ? '!border-red-500' : 'border-zinc-300'}`}
                     />
+                    {errors.genre && <p className="text-xs text-red-500">{errors.genre}</p>}
                 </div>
                 <div className="space-y-1">
                     <label className="text-sm font-medium">Link</label>
                     <input
                         type="text" placeholder="Link"
-                        value={link} onChange={e => setLink(e.target.value)}
-                        className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
+                        value={link} onChange={(e) => { setLink(e.target.value); validateField('link', e.target.value) }}
+                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.link ? '!border-red-500' : 'border-zinc-300'}`}
                     />
+                    {errors.link && <p className="text-xs text-red-500">{errors.link}</p>}
                 </div>
                 <div className="space-y-1">
                     <label className="text-sm font-medium">Image Link</label>
                     <input
                         type="text" placeholder="Image Link"
-                        value={imageLink} onChange={e => setImageLink(e.target.value)}
-                        className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
+                        value={imageLink} onChange={(e) => { setImageLink(e.target.value); validateField('imageLink', e.target.value) }}
+                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.imageLink ? '!border-red-500' : 'border-zinc-300'}`}
                     />
+                    {errors.imageLink && <p className="text-xs text-red-500">{errors.imageLink}</p>}
                 </div>
                 <div className="space-y-1">
                     <label className="text-sm font-medium">Status</label>
