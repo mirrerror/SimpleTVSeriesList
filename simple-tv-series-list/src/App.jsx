@@ -21,7 +21,7 @@ export default function App() {
     }
 
     return (
-        <div className="min-h-screen p-4 bg-white text-black dark:bg-zinc-900 dark:text-white transition">
+        <div className="min-h-screen p-4 bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
             <div className="max-w-4xl mx-auto">
                 <header className="flex justify-between items-center mb-6">
                     <h1 className="text-3xl font-bold">TV Series List</h1>
