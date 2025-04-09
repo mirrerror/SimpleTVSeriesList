@@ -16,8 +16,8 @@ export default function App() {
 
     const addSeries = (newSeries) => setSeries([...series, newSeries])
     const removeSeries = (id) => setSeries(series.filter(s => s.id !== id))
-    const likeSeries = (id) => {
-        setSeries(series.map(s => s.id === id ? { ...s, likes: s.likes + 1 } : s))
+    const rateSeries = (id, rating) => {
+        setSeries(series.map(s => s.id === id ? { ...s, rating } : s))
     }
 
     return (
@@ -28,7 +28,7 @@ export default function App() {
                     <ThemeToggle />
                 </header>
                 <TVSeriesForm onAdd={addSeries} />
-                <TVSeriesList series={series} onLike={likeSeries} onRemove={removeSeries} />
+                <TVSeriesList series={series} onRate={rateSeries} onRemove={removeSeries} />
             </div>
         </div>
     )

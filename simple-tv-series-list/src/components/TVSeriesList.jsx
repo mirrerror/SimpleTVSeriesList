@@ -1,6 +1,6 @@
 import defaultImage from '../assets/default-series-image.jpg';
 
-export default function TVSeriesList({ series, onRemove }) {
+export default function TVSeriesList({ series, onRate, onRemove }) {
     const watchedSeries = series.filter(s => s.status === 'Watched');
     const otherSeries = series.filter(s => s.status !== 'Watched');
 
@@ -36,6 +36,21 @@ export default function TVSeriesList({ series, onRemove }) {
             <div className="flex gap-2 mt-2">
                 <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
             </div>
+            {s.status === 'Watched' && (
+                <div className="mt-2">
+                    <label className="block text-sm font-medium text-white">Rate:</label>
+                    <select
+                        value={s.rating || ''}
+                        onChange={(e) => onRate(s.id, e.target.value)}
+                        className="mt-1 block w-full border rounded px-3 py-2 bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                    >
+                        <option value="">Select rating</option>
+                        {[...Array(10)].map((_, i) => (
+                            <option key={i} value={i + 1}>{i + 1} ⭐</option>
+                        ))}
+                    </select>
+                </div>
+            )}
         </div>
     );
 
