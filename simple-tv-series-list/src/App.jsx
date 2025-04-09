@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import TVSeriesForm from './components/TVSeriesForm'
 import TVSeriesList from './components/TVSeriesList'
 import ThemeToggle from './components/ThemeToggle'
@@ -9,15 +9,44 @@ export default function App() {
         const stored = localStorage.getItem('tvSeries')
         return stored ? JSON.parse(stored) : []
     })
+    const [editingSeries, setEditingSeries] = useState(null)
+    const formRef = useRef(null)
 
     useEffect(() => {
         localStorage.setItem('tvSeries', JSON.stringify(series))
     }, [series])
 
+    useEffect(() => {
+        if (editingSeries && formRef.current) {
+            formRef.current.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            })
+        }
+    }, [editingSeries])
+
     const addSeries = (newSeries) => setSeries([...series, newSeries])
+
     const removeSeries = (id) => setSeries(series.filter(s => s.id !== id))
+
     const rateSeries = (id, rating) => {
         setSeries(series.map(s => s.id === id ? { ...s, rating } : s))
+    }
+
+    const editSeries = (seriesData) => {
+        setEditingSeries(seriesData)
+    }
+
+    const updateSeries = (updatedSeries) => {
+        if (!updatedSeries) {
+            setEditingSeries(null)
+            return
+        }
+
+        setSeries(series.map(s =>
+            s.id === updatedSeries.id ? updatedSeries : s
+        ))
+        setEditingSeries(null)
     }
 
     return (
@@ -27,8 +56,19 @@ export default function App() {
                     <h1 className="text-3xl font-bold">TV Series List</h1>
                     <ThemeToggle />
                 </header>
-                <TVSeriesForm onAdd={addSeries} />
-                <TVSeriesList series={series} onRate={rateSeries} onRemove={removeSeries} />
+                <div ref={formRef}>
+                    <TVSeriesForm
+                        onAdd={addSeries}
+                        editSeries={editingSeries}
+                        onUpdate={updateSeries}
+                    />
+                </div>
+                <TVSeriesList
+                    series={series}
+                    onRate={rateSeries}
+                    onRemove={removeSeries}
+                    onEdit={editSeries}
+                />
             </div>
         </div>
     )
