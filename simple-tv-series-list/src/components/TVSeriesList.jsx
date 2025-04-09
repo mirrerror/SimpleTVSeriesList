@@ -33,9 +33,6 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
             </div>
             <p>🎭 {s.genre}</p>
             {s.link && <p>🔗 <a className="text-fuchsia-700" href={s.link}>{s.link}</a></p>}
-            <div className="flex gap-2 mt-2">
-                <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
-            </div>
             {s.status === 'Watched' && (
                 <div className="mt-2">
                     <label className="block text-sm font-medium text-white">Rate:</label>
@@ -51,6 +48,9 @@ export default function TVSeriesList({ series, onRate, onRemove }) {
                     </select>
                 </div>
             )}
+            <div className="flex gap-2 mt-2">
+                <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
+            </div>
         </div>
     );
 
