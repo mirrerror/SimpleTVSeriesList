@@ -10,6 +10,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
     const [isEditing, setIsEditing] = useState(false)
     const [editId, setEditId] = useState(null)
     const [errors, setErrors] = useState({})
+    const [dateAdded, setDateAdded] = useState('')
 
     useEffect(() => {
         if (editSeries) {
@@ -20,6 +21,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             setStatus(editSeries.status || 'Watching')
             setIsEditing(true)
             setEditId(editSeries.id)
+            setDateAdded(editSeries.dateAdded || '')
         }
     }, [editSeries])
 
@@ -31,6 +33,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         setStatus('Watching')
         setIsEditing(false)
         setEditId(null)
+        setDateAdded('')
         setErrors({})
     }
 
@@ -110,6 +113,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
 
         if (!validateUrls()) return
 
+        const currentDate = new Date().toISOString()
+
         if (isEditing && editId) {
             onUpdate({
                 id: editId,
@@ -118,7 +123,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                 status,
                 link,
                 imageLink,
-                rating: editSeries?.rating
+                rating: editSeries?.rating,
+                dateAdded: dateAdded || currentDate
             })
         } else {
             onAdd({
@@ -127,7 +133,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                 genre,
                 status,
                 link,
-                imageLink
+                imageLink,
+                dateAdded: currentDate
             })
         }
 

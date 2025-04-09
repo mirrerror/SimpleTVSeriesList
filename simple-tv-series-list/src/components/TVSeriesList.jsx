@@ -1,8 +1,32 @@
+import React, { useState } from 'react';
 import defaultImage from '../assets/default-series-image.jpg';
 
 export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobile }) {
-    const watchedSeries = series.filter(s => s.status === 'Watched');
-    const otherSeries = series.filter(s => s.status !== 'Watched');
+    const [sortOrder, setSortOrder] = useState('desc');
+    const [statusFilter, setStatusFilter] = useState('all');
+
+    const handleSortOrderChange = (e) => {
+        setSortOrder(e.target.value);
+    };
+
+    const handleStatusFilterChange = (e) => {
+        setStatusFilter(e.target.value);
+    };
+
+    const sortByDate = (seriesList) => {
+        return seriesList.sort((a, b) => {
+            const dateA = new Date(a.dateAdded);
+            const dateB = new Date(b.dateAdded);
+            return sortOrder === 'asc' ? dateA - dateB : dateB - dateA;
+        });
+    };
+
+    const filteredSeries = series.filter((s) =>
+        statusFilter === 'all' || s.status === statusFilter
+    );
+
+    const watchedSeries = sortByDate(filteredSeries.filter(s => s.status === 'Watched'));
+    const otherSeries = sortByDate(filteredSeries.filter(s => s.status !== 'Watched'));
 
     const SeriesCard = ({ series: s, onRemove, onEdit }) => {
         const handleImageError = (e) => {
@@ -42,6 +66,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                 </div>
                 <div className="flex-grow">
                     <p className="text-sm sm:text-base mt-2">🎭 {s.genre || 'No genre specified'}</p>
+                    <p className="text-sm sm:text-base mt-2">📅 {new Date(s.dateAdded).toLocaleDateString()}</p>
                     {s.link && (
                         <p className="text-sm mt-1 overflow-hidden text-ellipsis">
                             🔗 <a
@@ -90,6 +115,32 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
 
     return (
         <div className="space-y-4 sm:space-y-6">
+            <div className="mb-4">
+                <label className="block text-sm font-medium">Sort by Date:</label>
+                <select
+                    value={sortOrder}
+                    onChange={handleSortOrderChange}
+                    className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                >
+                    <option value="desc">Newest First</option>
+                    <option value="asc">Oldest First</option>
+                </select>
+            </div>
+
+            <div className="mb-4">
+                <label className="block text-sm font-medium">Filter by Status:</label>
+                <select
+                    value={statusFilter}
+                    onChange={handleStatusFilterChange}
+                    className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                >
+                    <option value="all">All</option>
+                    <option value="Watched">Watched</option>
+                    <option value="Watching">Watching</option>
+                    <option value="Plan to Watch">Plan to Watch</option>
+                </select>
+            </div>
+
             {watchedSeries.length > 0 && (
                 <div>
                     <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
