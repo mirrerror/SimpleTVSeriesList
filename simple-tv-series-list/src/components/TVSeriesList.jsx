@@ -1,3 +1,5 @@
+import defaultImage from '../assets/default-series-image.jpg';
+
 export default function TVSeriesList({ series, onRemove }) {
     const watchedSeries = series.filter(s => s.status === 'Watched');
     const otherSeries = series.filter(s => s.status !== 'Watched');
@@ -22,13 +24,13 @@ export default function TVSeriesList({ series, onRemove }) {
                     </span>
                 )}
             </div>
-            {s.imageLink && (
+            <div className="mt-2 w-full h-[300px] overflow-hidden rounded">
                 <img
-                    src={s.imageLink}
+                    src={s.imageLink || defaultImage}
                     alt={`${s.title} image`}
-                    className="mt-2 w-800 h-600 rounded"
+                    className="w-full h-full object-cover"
                 />
-            )}
+            </div>
             <p>🎭 {s.genre}</p>
             {s.link && <p>🔗 <a className="text-fuchsia-700" href={s.link}>{s.link}</a></p>}
             <div className="flex gap-2 mt-2">
