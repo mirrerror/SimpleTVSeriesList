@@ -22,9 +22,15 @@ export default function TVSeriesList({ series, onRemove }) {
                     </span>
                 )}
             </div>
+            {s.imageLink && (
+                <img
+                    src={s.imageLink}
+                    alt={`${s.title} image`}
+                    className="mt-2 w-800 h-600 rounded"
+                />
+            )}
             <p>🎭 {s.genre}</p>
-            {s.link && <p>🔗 {s.link}</p>}
-            {s.imageLink && <p>🔗 {s.imageLink}</p>}
+            {s.link && <p>🔗 <a className="text-fuchsia-700" href={s.link}>{s.link}</a></p>}
             <div className="flex gap-2 mt-2">
                 <button onClick={() => onRemove(s.id)} className="bg-red-500 hover:bg-red-600 px-3 py-1 text-white rounded transition">Remove</button>
             </div>
