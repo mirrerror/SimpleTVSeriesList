@@ -117,30 +117,32 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
 
     return (
         <div className="space-y-4 sm:space-y-6">
-            <div className="mb-4">
-                <label className="block text-sm font-medium">Sort by Date:</label>
-                <select
-                    value={sortOrder}
-                    onChange={handleSortOrderChange}
-                    className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
-                >
-                    <option value="desc">Newest First</option>
-                    <option value="asc">Oldest First</option>
-                </select>
-            </div>
+            <div className="flex flex-wrap gap-4">
+                <div className="w-full sm:w-auto sm:flex-1">
+                    <label className="block text-sm font-medium">Sort by Date:</label>
+                    <select
+                        value={sortOrder}
+                        onChange={handleSortOrderChange}
+                        className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                    >
+                        <option value="desc">Newest First</option>
+                        <option value="asc">Oldest First</option>
+                    </select>
+                </div>
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium">Filter by Status:</label>
-                <select
-                    value={statusFilter}
-                    onChange={handleStatusFilterChange}
-                    className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
-                >
-                    <option value="all">All</option>
-                    <option value="Watched">Watched</option>
-                    <option value="Watching">Watching</option>
-                    <option value="Plan to Watch">Plan to Watch</option>
-                </select>
+                <div className="w-full sm:w-auto sm:flex-1">
+                    <label className="block text-sm font-medium">Filter by Status:</label>
+                    <select
+                        value={statusFilter}
+                        onChange={handleStatusFilterChange}
+                        className="mt-1 block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                    >
+                        <option value="all">All</option>
+                        <option value="Watched">Watched</option>
+                        <option value="Watching">Watching</option>
+                        <option value="Plan to Watch">Plan to Watch</option>
+                    </select>
+                </div>
             </div>
 
             {noSeriesFound ? (
@@ -149,19 +151,6 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                 </div>
             ) : (
                 <>
-                    {watchedSeries.length > 0 && (
-                        <div>
-                            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
-                                Watched Series
-                            </h2>
-                            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                                {watchedSeries.map(s => (
-                                    <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
                     {otherSeries.length > 0 && (
                         <div>
                             <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
@@ -169,6 +158,19 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                             </h2>
                             <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                                 {otherSeries.map(s => (
+                                    <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {watchedSeries.length > 0 && (
+                        <div className="mt-6">
+                            <h2 className="text-xl sm:text-2xl font-bold mb-2 sm:mb-3 border-b pb-2 dark:border-zinc-700">
+                                Watched Series
+                            </h2>
+                            <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                                {watchedSeries.map(s => (
                                     <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
                                 ))}
                             </div>
