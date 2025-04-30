@@ -11,6 +11,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
     const [editId, setEditId] = useState(null)
     const [errors, setErrors] = useState({})
     const [dateAdded, setDateAdded] = useState('')
+    const [isExpanded, setIsExpanded] = useState(false)
 
     useEffect(() => {
         if (editSeries) {
@@ -22,6 +23,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             setIsEditing(true)
             setEditId(editSeries.id)
             setDateAdded(editSeries.dateAdded || '')
+            setIsExpanded(true)
         }
     }, [editSeries])
 
@@ -35,6 +37,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         setEditId(null)
         setDateAdded('')
         setErrors({})
+        setIsExpanded(false)
     }
 
     const validateUrls = () => {
@@ -44,7 +47,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             try {
                 new URL(link)
             } catch {
-                setErrors(prev => ({ ...prev, link: 'Please enter a valid URL for the Link field.' }))
+                setErrors(prev => ({ ...prev, link: 'Invalid URL' }))
                 result = false
             }
         }
@@ -53,7 +56,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             try {
                 new URL(imageLink)
             } catch {
-                setErrors(prev => ({ ...prev, imageLink: 'Please enter a valid URL for the Image Link field.' }))
+                setErrors(prev => ({ ...prev, imageLink: 'Invalid URL' }))
                 result = false
             }
         }
@@ -67,7 +70,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         switch (field) {
             case 'title':
                 if (!value.trim()) {
-                    newErrors.title = 'Title is required.'
+                    newErrors.title = 'Required'
                 } else {
                     delete newErrors.title
                 }
@@ -78,7 +81,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                         new URL(value)
                         delete newErrors.link
                     } catch {
-                        newErrors.link = 'Please enter a valid URL for the Link field.'
+                        newErrors.link = 'Invalid URL'
                     }
                 } else {
                     delete newErrors.link
@@ -90,7 +93,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                         new URL(value)
                         delete newErrors.imageLink
                     } catch {
-                        newErrors.imageLink = 'Please enter a valid URL for the Image Link field.'
+                        newErrors.imageLink = 'Invalid URL'
                     }
                 } else {
                     delete newErrors.imageLink
@@ -107,7 +110,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         e.preventDefault()
 
         if (!title.trim()) {
-            setErrors(prev => ({ ...prev, title: 'Title is required.' }))
+            setErrors(prev => ({ ...prev, title: 'Required' }))
             return
         }
 
@@ -148,84 +151,123 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
         }
     }
 
+    const toggleExpand = () => {
+        setIsExpanded(!isExpanded)
+    }
+
     return (
-        <form onSubmit={handleSubmit} className="mb-4 sm:mb-6 p-3 sm:p-4 bg-gray-100 dark:bg-zinc-800 rounded-lg shadow">
-            <h2 className="text-lg sm:text-xl font-bold mb-2 sm:mb-3">
-                {isEditing ? 'Edit Series' : 'Add New Series'}
-            </h2>
-            <div className="grid gap-2 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-                <div className="space-y-1">
-                    <label className="text-sm font-medium">
-                        Title <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text" placeholder="Title"
-                        value={title} onChange={(e) => { setTitle(e.target.value); validateField('title', e.target.value) }}
-                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.title ? '!border-red-500' : 'border-zinc-300'}`}
-                    />
-                    {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
-                </div>
-                <div className="space-y-1">
-                    <label className="text-sm font-medium">Genre</label>
-                    <input
-                        type="text" placeholder="Genre"
-                        value={genre} onChange={(e) => { setGenre(e.target.value); validateField('genre', e.target.value) }}
-                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.genre ? '!border-red-500' : 'border-zinc-300'}`}
-                    />
-                    {errors.genre && <p className="text-xs text-red-500">{errors.genre}</p>}
-                </div>
-                <div className="space-y-1">
-                    <label className="text-sm font-medium">Link</label>
-                    <input
-                        type="text" placeholder="Link"
-                        value={link} onChange={(e) => { setLink(e.target.value); validateField('link', e.target.value) }}
-                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.link ? '!border-red-500' : 'border-zinc-300'}`}
-                    />
-                    {errors.link && <p className="text-xs text-red-500">{errors.link}</p>}
-                </div>
-                <div className="space-y-1">
-                    <label className="text-sm font-medium">Image Link</label>
-                    <input
-                        type="text" placeholder="Image Link"
-                        value={imageLink} onChange={(e) => { setImageLink(e.target.value); validateField('imageLink', e.target.value) }}
-                        className={`border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.imageLink ? '!border-red-500' : 'border-zinc-300'}`}
-                    />
-                    {errors.imageLink && <p className="text-xs text-red-500">{errors.imageLink}</p>}
-                </div>
-                <div className="space-y-1">
-                    <label className="text-sm font-medium">Status</label>
-                    <select
-                        value={status} onChange={e => setStatus(e.target.value)}
-                        className="border rounded px-3 py-2 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
-                    >
-                        <option>Watching</option>
-                        <option>Watched</option>
-                        <option>Plan to Watch</option>
-                    </select>
-                </div>
-            </div>
-            <div className="mt-1 mb-2">
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                    <span className="text-red-500">*</span> indicates required field
-                </p>
-            </div>
-            <div className="flex gap-2 mt-2">
-                <button
-                    type="submit"
-                    className="px-3 sm:px-4 py-1.5 sm:py-2 bg-fuchsia-700 text-white rounded hover:bg-amber-500 text-sm sm:text-base font-medium transition"
-                >
-                    {isEditing ? 'Update Series' : 'Add Series'}
-                </button>
-                {isEditing && (
+        <div className="mb-4 bg-gray-50 dark:bg-zinc-800 rounded-lg shadow border border-gray-200 dark:border-zinc-700 overflow-hidden">
+            <div
+                className="px-4 py-3 flex justify-between items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700"
+                onClick={!isEditing ? toggleExpand : undefined}
+            >
+                <h2 className="text-lg font-bold flex items-center">
+                    {isEditing ? 'Edit Series' : 'Add New Series'}
+                    {!isEditing && (
+                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                            {isExpanded ? '(click to collapse)' : '(click to expand)'}
+                        </span>
+                    )}
+                </h2>
+                {!isEditing && (
                     <button
                         type="button"
-                        onClick={handleCancel}
-                        className="px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm sm:text-base font-medium transition"
+                        className="text-xl font-bold transition-transform duration-200 ease-in-out"
+                        style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(90deg)' }}
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            toggleExpand();
+                        }}
                     >
-                        Cancel
+                        {isExpanded ? '−' : '+'}
                     </button>
                 )}
             </div>
-        </form>
+
+            <div
+                className="overflow-hidden transition-all duration-300 ease-in-out"
+                style={{
+                    maxHeight: isExpanded ? '500px' : '0',
+                    opacity: isExpanded ? 1 : 0
+                }}
+            >
+                <form onSubmit={handleSubmit} className="px-4 pb-4">
+                    <div className="grid gap-x-3 gap-y-2">
+                        <div className="grid grid-cols-12 gap-3">
+                            <div className="col-span-6 sm:col-span-5">
+                                <label className="text-xs font-medium">
+                                    Title <span className="text-red-500">*</span>
+                                </label>
+                                <input
+                                    type="text" placeholder="Title"
+                                    value={title} onChange={(e) => { setTitle(e.target.value); validateField('title', e.target.value) }}
+                                    className={`border rounded px-2 py-1 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.title ? '!border-red-500' : 'border-zinc-300'}`}
+                                />
+                                {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
+                            </div>
+                            <div className="col-span-3 sm:col-span-4">
+                                <label className="text-xs font-medium">Genre</label>
+                                <input
+                                    type="text" placeholder="Genre"
+                                    value={genre} onChange={(e) => { setGenre(e.target.value); validateField('genre', e.target.value) }}
+                                    className={`border rounded px-2 py-1 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.genre ? '!border-red-500' : 'border-zinc-300'}`}
+                                />
+                                {errors.genre && <p className="text-xs text-red-500">{errors.genre}</p>}
+                            </div>
+                            <div className="col-span-3">
+                                <label className="text-xs font-medium">Status</label>
+                                <select
+                                    value={status} onChange={e => setStatus(e.target.value)}
+                                    className="border rounded px-2 py-1 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm"
+                                >
+                                    <option>Watching</option>
+                                    <option>Watched</option>
+                                    <option>Plan to Watch</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-12 gap-3 items-start">
+                            <div className="col-span-6">
+                                <label className="text-xs font-medium">Image Link</label>
+                                <input
+                                    type="text" placeholder="Image URL"
+                                    value={imageLink} onChange={(e) => { setImageLink(e.target.value); validateField('imageLink', e.target.value) }}
+                                    className={`border rounded px-2 py-1 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.imageLink ? '!border-red-500' : 'border-zinc-300'}`}
+                                />
+                                {errors.imageLink && <p className="text-xs text-red-500">{errors.imageLink}</p>}
+                            </div>
+                            <div className="col-span-6">
+                                <label className="text-xs font-medium">Link</label>
+                                <input
+                                    type="text" placeholder="Website URL"
+                                    value={link} onChange={(e) => { setLink(e.target.value); validateField('link', e.target.value) }}
+                                    className={`border rounded px-2 py-1 w-full bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white text-sm ${errors.link ? '!border-red-500' : 'border-zinc-300'}`}
+                                />
+                                {errors.link && <p className="text-xs text-red-500">{errors.link}</p>}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end gap-2 mt-3">
+                        {isEditing && (
+                            <button
+                                type="button"
+                                onClick={handleCancel}
+                                className="px-3 py-1 bg-gray-500 text-white rounded hover:bg-gray-600 text-sm font-medium transition"
+                            >
+                                Cancel
+                            </button>
+                        )}
+                        <button
+                            type="submit"
+                            className="px-3 py-1 bg-fuchsia-700 text-white rounded hover:bg-fuchsia-600 text-sm font-medium transition"
+                        >
+                            {isEditing ? 'Update' : 'Add'}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     )
 }
