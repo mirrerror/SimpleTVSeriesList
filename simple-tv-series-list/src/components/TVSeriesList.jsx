@@ -33,11 +33,15 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
             e.target.src = defaultImage;
         };
 
+        const isNew = new Date() - new Date(s.dateAdded) < 7 * 24 * 60 * 60 * 1000;
+
         return (
-            <div className="p-3 sm:p-4 border rounded shadow dark:border-zinc-700 dark:bg-zinc-800 flex flex-col h-full">
-                <div className="flex justify-between items-start mb-2">
-                    <h2 className="text-lg sm:text-xl font-semibold truncate pr-2">{s.title}</h2>
-                    <div className="flex-shrink-0">
+            <div className="p-3 sm:p-4 border rounded shadow dark:border-zinc-700 dark:bg-zinc-800 flex flex-col h-full"
+                 style={{ position: 'static' }}>
+                <div className="flex justify-between items-center mb-6"
+                     style={{ position: 'relative' }}>
+                    <h2 className="text-lg sm:text-xl font-semibold truncate pr-2 flex items-center gap-2">
+                        {s.title}
                         {s.status === 'Watched' && (
                             <span className="bg-fuchsia-700 text-white px-2 py-0.5 rounded-full text-xs font-bold">
                                 ✅ Watched
@@ -53,9 +57,9 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                 ⌛ Plan to watch
                             </span>
                         )}
-                    </div>
+                    </h2>
                 </div>
-                <div className="mt-1 w-full h-40 sm:h-48 md:h-56 overflow-hidden rounded">
+                <div className="mt-1 w-full h-40 sm:h-48 md:h-56 overflow-hidden rounded relative">
                     <img
                         src={s.imageLink || defaultImage}
                         alt={`${s.title} image`}
@@ -63,6 +67,13 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         loading="lazy"
                         onError={handleImageError}
                     />
+                    {isNew && (
+                        <span
+                            className="absolute top-2 left-2 bg-fuchsia-700 text-white text-xs px-2 py-0.5 rounded-full font-bold"
+                        >
+                            NEW
+                        </span>
+                    )}
                 </div>
                 <div className="flex-grow">
                     <p className="text-sm sm:text-base mt-2">🎭 {s.genre || 'No genre specified'}</p>

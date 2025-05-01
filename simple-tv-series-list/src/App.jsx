@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import TVSeriesForm from './components/TVSeriesForm'
 import TVSeriesList from './components/TVSeriesList'
 import ThemeToggle from './components/ThemeToggle'
+import BackToTop from './components/BackToTop'
 import './index.css'
 
 export default function App() {
@@ -64,11 +65,15 @@ export default function App() {
 
     return (
         <div className="min-h-screen p-2 sm:p-4 bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
-            <div className="max-w-4xl mx-auto">
-                <header className="flex flex-col sm:flex-row justify-between items-center mb-4 sm:mb-6 gap-2">
-                    <h1 className="text-2xl sm:text-3xl font-bold text-center sm:text-left">TV Series List</h1>
-                    <ThemeToggle />
-                </header>
+            <div
+                className="bg-white dark:bg-zinc-800 shadow-md py-2 z-10 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center px-4"
+                style={{ position: 'fixed', top: 0, left: 0, right: 0 }}
+            >
+                <h1 className="text-lg font-bold">TV Series Tracker</h1>
+                <ThemeToggle />
+            </div>
+
+            <div className="max-w-4xl mx-auto" style={{ paddingTop: '60px' }}>
                 <div ref={formRef} className="mb-4 sm:mb-6">
                     <TVSeriesForm
                         onAdd={addSeries}
@@ -85,6 +90,8 @@ export default function App() {
                     isMobile={isMobile}
                 />
             </div>
+
+            <BackToTop />
         </div>
     )
 }
