@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import TVSeriesForm from './components/TVSeriesForm';
@@ -19,6 +19,15 @@ export default function App() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
+    const [forceRefresh, setForceRefresh] = useState(0);
+    const [pagination, setPagination] = useState({
+        page: 0,
+        size: 10,
+        sortBy: 'status',
+        sortDirection: 'desc',
+        totalPages: 0,
+        totalElements: 0
+    });
 
     useEffect(() => {
         const checkMobile = () => {
@@ -30,33 +39,66 @@ export default function App() {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    const loadSeries = useCallback(async () => {
-        if (loading || isDataLoaded) return;
+    useEffect(() => {
+        if (isAuthenticated()) {
+            const controller = new AbortController();
 
-        try {
-            setLoading(true);
-            setError(null);
-            const data = await fetchSeries();
-            setSeries(data);
-            setIsDataLoaded(true);
-        } catch (err) {
-            console.error('Failed to load series:', err);
-            setError('Failed to load TV series. Please try again later.');
-        } finally {
-            setLoading(false);
+            const fetchData = async () => {
+                try {
+                    setLoading(true);
+                    setError(null);
+                    const data = await fetchSeries(
+                        pagination.page,
+                        pagination.size,
+                        pagination.sortBy,
+                        pagination.sortDirection
+                    );
+
+                    if (!controller.signal.aborted) {
+                        setSeries(data.content);
+                        setPagination(prevPagination => ({
+                            ...prevPagination,
+                            totalPages: data.pagination.totalPages,
+                            totalElements: data.pagination.totalElements
+                        }));
+                        setIsDataLoaded(true);
+                        setLoading(false);
+                    }
+                } catch (err) {
+                    if (!controller.signal.aborted) {
+                        console.error('Failed to load series:', err);
+                        setError('Failed to load TV series. Please try again later.');
+                        setLoading(false);
+                    }
+                }
+            };
+
+            fetchData();
+
+            return () => controller.abort();
         }
-    }, [loading, isDataLoaded]);
+    }, [pagination.page, pagination.size, pagination.sortBy, pagination.sortDirection, forceRefresh]);
+
+    const handlePaginationChange = (newPagination) => {
+        setPagination(prevPagination => ({
+            ...prevPagination,
+            ...newPagination
+        }));
+    };
+
+    const triggerRefresh = () => {
+        setForceRefresh(prev => prev + 1);
+    };
 
     const addSeries = async (newSeries) => {
         try {
             setLoading(true);
             setError(null);
-            const addedSeries = await createSeries(newSeries);
-            setSeries(prevSeries => [...prevSeries, addedSeries]);
+            await createSeries(newSeries);
+            triggerRefresh();
         } catch (err) {
             console.error('Failed to add series:', err);
             setError('Failed to add TV series. Please try again later.');
-        } finally {
             setLoading(false);
         }
     };
@@ -66,11 +108,10 @@ export default function App() {
             setLoading(true);
             setError(null);
             await deleteSeries(id);
-            setSeries(prevSeries => prevSeries.filter(s => s.id !== id));
+            triggerRefresh();
         } catch (err) {
             console.error('Failed to remove series:', err);
             setError('Failed to remove TV series. Please try again later.');
-        } finally {
             setLoading(false);
         }
     };
@@ -83,12 +124,11 @@ export default function App() {
             const updatedSeriesData = { ...seriesToUpdate, rating };
             setLoading(true);
             setError(null);
-            const updatedSeries = await updateSeries(updatedSeriesData);
-            setSeries(prevSeries => prevSeries.map(s => s.id === id ? updatedSeries : s));
+            await updateSeries(updatedSeriesData);
+            triggerRefresh();
         } catch (err) {
             console.error('Failed to rate series:', err);
             setError('Failed to update rating. Please try again later.');
-        } finally {
             setLoading(false);
         }
     };
@@ -106,24 +146,17 @@ export default function App() {
         try {
             setLoading(true);
             setError(null);
-            const result = await updateSeries(updatedSeries);
-            setSeries(prevSeries => prevSeries.map(s => s.id === updatedSeries.id ? result : s));
+            await updateSeries(updatedSeries);
             setEditingSeries(null);
+            triggerRefresh();
         } catch (err) {
             console.error('Failed to update series:', err);
             setError('Failed to update TV series. Please try again later.');
-        } finally {
             setLoading(false);
         }
     };
 
     const Dashboard = () => {
-        useEffect(() => {
-            if (!isDataLoaded) {
-                loadSeries();
-            }
-        }, [isDataLoaded, loadSeries]);
-
         return (
             <div className="max-w-4xl mx-auto" style={{ paddingTop: '60px' }}>
                 {error && (
@@ -154,6 +187,8 @@ export default function App() {
                         onRemove={removeSeries}
                         onEdit={editSeries}
                         isMobile={isMobile}
+                        pagination={pagination}
+                        onPaginationChange={handlePaginationChange}
                     />
                 )}
             </div>
@@ -163,6 +198,14 @@ export default function App() {
     const handleLogout = () => {
         setIsDataLoaded(false);
         setSeries([]);
+        setPagination({
+            page: 0,
+            size: 10,
+            sortBy: 'status',
+            sortDirection: 'desc',
+            totalPages: 0,
+            totalElements: 0
+        });
     };
 
     return (
