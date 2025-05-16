@@ -1,97 +1,189 @@
-import { useEffect, useState, useRef } from 'react'
-import TVSeriesForm from './components/TVSeriesForm'
-import TVSeriesList from './components/TVSeriesList'
-import ThemeToggle from './components/ThemeToggle'
-import BackToTop from './components/BackToTop'
-import './index.css'
+import { useState, useEffect, useCallback } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Header from './components/Header';
+import TVSeriesForm from './components/TVSeriesForm';
+import TVSeriesList from './components/TVSeriesList';
+import BackToTop from './components/BackToTop';
+import Login from './components/Login';
+import Register from './components/Register';
+import ProtectedRoute from './components/ProtectedRoute';
+import { fetchSeries, createSeries, updateSeries, deleteSeries } from './services/TVSeriesApiService';
+import { isAuthenticated } from './services/AuthService';
+import './index.css';
 
 export default function App() {
-    const [series, setSeries] = useState(() => {
-        const stored = localStorage.getItem('tvSeries')
-        return stored ? JSON.parse(stored) : []
-    })
-    const [editingSeries, setEditingSeries] = useState(null)
-    const [isMobile, setIsMobile] = useState(false)
-    const formRef = useRef(null)
+    const [series, setSeries] = useState([]);
+    const [editingSeries, setEditingSeries] = useState(null);
+    const [isMobile, setIsMobile] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+    const [isDataLoaded, setIsDataLoaded] = useState(false);
 
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768)
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const loadSeries = useCallback(async () => {
+        if (loading || isDataLoaded) return;
+
+        try {
+            setLoading(true);
+            setError(null);
+            const data = await fetchSeries();
+            setSeries(data);
+            setIsDataLoaded(true);
+        } catch (err) {
+            console.error('Failed to load series:', err);
+            setError('Failed to load TV series. Please try again later.');
+        } finally {
+            setLoading(false);
         }
+    }, [loading, isDataLoaded]);
 
-        checkMobile()
-
-        window.addEventListener('resize', checkMobile)
-
-        return () => window.removeEventListener('resize', checkMobile)
-    }, [])
-
-    useEffect(() => {
-        localStorage.setItem('tvSeries', JSON.stringify(series))
-    }, [series])
-
-    useEffect(() => {
-        if (editingSeries && formRef.current) {
-            formRef.current.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            })
+    const addSeries = async (newSeries) => {
+        try {
+            setLoading(true);
+            setError(null);
+            const addedSeries = await createSeries(newSeries);
+            setSeries(prevSeries => [...prevSeries, addedSeries]);
+        } catch (err) {
+            console.error('Failed to add series:', err);
+            setError('Failed to add TV series. Please try again later.');
+        } finally {
+            setLoading(false);
         }
-    }, [editingSeries])
+    };
 
-    const addSeries = (newSeries) => setSeries([...series, newSeries])
+    const removeSeries = async (id) => {
+        try {
+            setLoading(true);
+            setError(null);
+            await deleteSeries(id);
+            setSeries(prevSeries => prevSeries.filter(s => s.id !== id));
+        } catch (err) {
+            console.error('Failed to remove series:', err);
+            setError('Failed to remove TV series. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    const removeSeries = (id) => setSeries(series.filter(s => s.id !== id))
+    const rateSeries = async (id, rating) => {
+        try {
+            const seriesToUpdate = series.find(s => s.id === id);
+            if (!seriesToUpdate) return;
 
-    const rateSeries = (id, rating) => {
-        setSeries(series.map(s => s.id === id ? { ...s, rating } : s))
-    }
+            const updatedSeriesData = { ...seriesToUpdate, rating };
+            setLoading(true);
+            setError(null);
+            const updatedSeries = await updateSeries(updatedSeriesData);
+            setSeries(prevSeries => prevSeries.map(s => s.id === id ? updatedSeries : s));
+        } catch (err) {
+            console.error('Failed to rate series:', err);
+            setError('Failed to update rating. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const editSeries = (seriesData) => {
-        setEditingSeries(seriesData)
-    }
+        setEditingSeries(seriesData);
+    };
 
-    const updateSeries = (updatedSeries) => {
+    const updateSeriesData = async (updatedSeries) => {
         if (!updatedSeries) {
-            setEditingSeries(null)
-            return
+            setEditingSeries(null);
+            return;
         }
 
-        setSeries(series.map(s =>
-            s.id === updatedSeries.id ? updatedSeries : s
-        ))
-        setEditingSeries(null)
-    }
+        try {
+            setLoading(true);
+            setError(null);
+            const result = await updateSeries(updatedSeries);
+            setSeries(prevSeries => prevSeries.map(s => s.id === updatedSeries.id ? result : s));
+            setEditingSeries(null);
+        } catch (err) {
+            console.error('Failed to update series:', err);
+            setError('Failed to update TV series. Please try again later.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    return (
-        <div className="min-h-screen p-2 sm:p-4 bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
-            <div
-                className="bg-white dark:bg-zinc-800 shadow-md py-2 z-10 border-b border-gray-200 dark:border-zinc-700 flex justify-between items-center px-4"
-                style={{ position: 'fixed', top: 0, left: 0, right: 0 }}
-            >
-                <h1 className="text-lg font-bold">TV Series Tracker</h1>
-                <ThemeToggle />
-            </div>
+    const Dashboard = () => {
+        useEffect(() => {
+            if (!isDataLoaded) {
+                loadSeries();
+            }
+        }, [isDataLoaded, loadSeries]);
 
+        return (
             <div className="max-w-4xl mx-auto" style={{ paddingTop: '60px' }}>
-                <div ref={formRef} className="mb-4 sm:mb-6">
+                {error && (
+                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                        {error}
+                    </div>
+                )}
+
+                <div className="mb-4 sm:mb-6">
                     <TVSeriesForm
                         onAdd={addSeries}
                         editSeries={editingSeries}
-                        onUpdate={updateSeries}
+                        onUpdate={updateSeriesData}
                         isMobile={isMobile}
                     />
                 </div>
-                <TVSeriesList
-                    series={series}
-                    onRate={rateSeries}
-                    onRemove={removeSeries}
-                    onEdit={editSeries}
-                    isMobile={isMobile}
-                />
-            </div>
 
-            <BackToTop />
-        </div>
-    )
+                {loading && (
+                    <div className="flex justify-center my-8">
+                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
+                    </div>
+                )}
+
+                {!loading && (
+                    <TVSeriesList
+                        series={series}
+                        onRate={rateSeries}
+                        onRemove={removeSeries}
+                        onEdit={editSeries}
+                        isMobile={isMobile}
+                    />
+                )}
+            </div>
+        );
+    };
+
+    const handleLogout = () => {
+        setIsDataLoaded(false);
+        setSeries([]);
+    };
+
+    return (
+        <Router>
+            <div className="min-h-screen bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
+                <Header onLogout={handleLogout} />
+
+                <Routes>
+                    <Route path="/" element={isAuthenticated() ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/register" element={<Register />} />
+
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/dashboard" element={<Dashboard />} />
+                    </Route>
+
+                    <Route path="*" element={<Navigate to="/" />} />
+                </Routes>
+
+                <BackToTop />
+            </div>
+        </Router>
+    );
 }
