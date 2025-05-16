@@ -2,15 +2,54 @@ import { authAxios } from './AuthService';
 
 const API_URL = '/api/series';
 
-export const fetchSeries = async () => {
+export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDirection = 'desc') => {
     try {
-        const response = await authAxios.get(API_URL);
+        console.log('Fetching series with params:', { page, size, sortBy, sortDirection });
+        const response = await authAxios.get(API_URL, {
+            params: {
+                page,
+                size,
+                sortBy,
+                sortDirection
+            }
+        });
 
-        if (Array.isArray(response.data)) {
-            return response.data.map(transformSeriesFromBackend);
+        console.log('Raw API response:', response.data);
+
+        // Check if response.data exists and has the expected structure
+        if (response.data) {
+            // Handle the response format which is an object with series, totalPages, and totalElements
+            const seriesArray = response.data.series || [];
+            const totalPages = response.data.totalPages || 0;
+            const totalElements = response.data.totalElements || 0;
+
+            console.log('Processed series array:', seriesArray);
+            console.log('Pagination info:', { totalPages, totalElements });
+
+            return {
+                content: seriesArray.map(transformSeriesFromBackend),
+                pagination: {
+                    page,
+                    size,
+                    sortBy,
+                    sortDirection,
+                    totalPages,
+                    totalElements
+                }
+            };
         } else {
-            console.warn('Expected array response but got:', response.data);
-            return [];
+            console.warn('Received empty response data');
+            return {
+                content: [],
+                pagination: {
+                    page,
+                    size,
+                    sortBy,
+                    sortDirection,
+                    totalPages: 0,
+                    totalElements: 0
+                }
+            };
         }
     } catch (error) {
         console.error('Error fetching series:', error);
