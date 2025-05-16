@@ -9,6 +9,7 @@ import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import { fetchSeries, createSeries, updateSeries, deleteSeries } from './services/TVSeriesApiService';
 import { isAuthenticated } from './services/AuthService';
+import { AuthProvider } from './context/AuthContext';
 import './index.css';
 
 export default function App() {
@@ -165,25 +166,27 @@ export default function App() {
     };
 
     return (
-        <Router>
-            <div className="min-h-screen bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
-                <Header onLogout={handleLogout} />
+        <AuthProvider>
+            <Router>
+                <div className="min-h-screen bg-white text-black dark:bg-zinc-900 dark:text-white transition-colors duration-300">
+                    <Header onLogout={handleLogout} />
 
-                <Routes>
-                    <Route path="/" element={isAuthenticated() ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+                    <Routes>
+                        <Route path="/" element={isAuthenticated() ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
 
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/register" element={<Register />} />
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/register" element={<Register />} />
 
-                    <Route element={<ProtectedRoute />}>
-                        <Route path="/dashboard" element={<Dashboard />} />
-                    </Route>
+                        <Route element={<ProtectedRoute />}>
+                            <Route path="/dashboard" element={<Dashboard />} />
+                        </Route>
 
-                    <Route path="*" element={<Navigate to="/" />} />
-                </Routes>
+                        <Route path="*" element={<Navigate to="/" />} />
+                    </Routes>
 
-                <BackToTop />
-            </div>
-        </Router>
+                    <BackToTop />
+                </div>
+            </Router>
+        </AuthProvider>
     );
 }

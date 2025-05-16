@@ -1,33 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { isAuthenticated, getCurrentUser, logout } from '../services/AuthService';
+import { logout } from '../services/AuthService';
 import ThemeToggle from './ThemeToggle';
+import { useAuth } from '../context/AuthContext';
 
 export default function Header({ onLogout }) {
-    const [authenticated, setAuthenticated] = useState(false);
-    const [user, setUser] = useState(null);
     const [showDropdown, setShowDropdown] = useState(false);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        const checkAuth = () => {
-            const auth = isAuthenticated();
-            setAuthenticated(auth);
-            setUser(auth ? getCurrentUser() : null);
-        };
-
-        checkAuth();
-        window.addEventListener('storage', checkAuth);
-
-        return () => {
-            window.removeEventListener('storage', checkAuth);
-        };
-    }, []);
+    const { authenticated, user, updateAuthState } = useAuth();
 
     const handleLogout = () => {
         logout();
-        setAuthenticated(false);
-        setUser(null);
+        updateAuthState(false);
         setShowDropdown(false);
 
         if (onLogout && typeof onLogout === 'function') {
