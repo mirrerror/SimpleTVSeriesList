@@ -4,7 +4,7 @@ const API_URL = '/api/series';
 
 export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDirection = 'desc', status = '') => {
     try {
-        console.log('Fetching series with params:', { page, size, sortBy, sortDirection, status });
+        // console.log('Fetching series with params:', { page, size, sortBy, sortDirection, status });
         const response = await authAxios.get(API_URL, {
             params: {
                 page,
@@ -15,15 +15,15 @@ export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDi
             }
         });
 
-        console.log('Raw API response:', response.data);
+        // console.log('Raw API response:', response.data);
 
         if (response.data) {
             const seriesArray = response.data.series || [];
             const totalPages = response.data.totalPages || 0;
             const totalElements = response.data.totalElements || 0;
 
-            console.log('Processed series array:', seriesArray);
-            console.log('Pagination info:', { totalPages, totalElements });
+            // console.log('Processed series array:', seriesArray);
+            // console.log('Pagination info:', { totalPages, totalElements });
 
             return {
                 content: seriesArray.map(transformSeriesFromBackend),
@@ -61,9 +61,9 @@ export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDi
 export const createSeries = async (series) => {
     try {
         const seriesDto = transformSeriesToBackend(series);
-        console.log('Sending to backend:', seriesDto);
+        // console.log('Sending to backend:', seriesDto);
         const response = await authAxios.post(API_URL, seriesDto);
-        console.log('Backend response:', response.data);
+        // console.log('Backend response:', response.data);
         return transformSeriesFromBackend(response.data);
     } catch (error) {
         console.error('Error creating series:', error);
@@ -74,9 +74,9 @@ export const createSeries = async (series) => {
 export const updateSeries = async (series) => {
     try {
         const seriesDto = transformSeriesToBackend(series);
-        console.log('Updating series:', seriesDto);
+        // console.log('Updating series:', seriesDto);
         const response = await authAxios.put(`${API_URL}/${series.id}`, seriesDto);
-        console.log('Backend response after update:', response.data);
+        // console.log('Backend response after update:', response.data);
         return transformSeriesFromBackend(response.data);
     } catch (error) {
         console.error('Error updating series:', error);
