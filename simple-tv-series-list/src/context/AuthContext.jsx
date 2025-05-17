@@ -1,58 +1,65 @@
-import { createContext, useState, useEffect, useContext } from 'react';
-import { getCurrentUser, isAuthenticated } from '../services/AuthService';
+import { createContext, useContext, useState, useEffect } from 'react';
+import { isAuthenticated, getCurrentUser, fetchUserDetails } from '../services/AuthService';
 
-const AuthContext = createContext(null);
+const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export function useAuth() {
+    return useContext(AuthContext);
+}
+
+export function AuthProvider({ children }) {
     const [authenticated, setAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [authTrigger, setAuthTrigger] = useState(0);
 
     useEffect(() => {
-        const checkAuth = () => {
-            const auth = isAuthenticated();
-            setAuthenticated(auth);
-            setUser(auth ? getCurrentUser() : null);
+        const initializeAuth = async () => {
+            const authStatus = isAuthenticated();
+            setAuthenticated(authStatus);
+
+            if (authStatus) {
+                try {
+                    const userData = await getCurrentUser();
+
+                    if (!userData?.role) {
+                        const freshUserData = await fetchUserDetails();
+                        setUser(freshUserData);
+                    } else {
+                        setUser(userData);
+                    }
+                } catch (error) {
+                    console.error("Failed to get user data:", error);
+                }
+            }
+
             setLoading(false);
         };
 
-        checkAuth();
-
-        window.addEventListener('storage', checkAuth);
-
-        return () => {
-            window.removeEventListener('storage', checkAuth);
-        };
+        initializeAuth();
     }, [authTrigger]);
 
-    const updateAuthState = (isAuth) => {
-        setAuthenticated(isAuth);
-        setUser(isAuth ? getCurrentUser() : null);
+    const updateAuthState = (isAuthenticated, userData = null) => {
+        setAuthenticated(isAuthenticated);
+        if (userData) {
+            setUser(userData);
+        } else if (!isAuthenticated) {
+            setUser(null);
+        }
         setAuthTrigger(prev => prev + 1);
     };
 
     const value = {
         authenticated,
         user,
-        loading,
         updateAuthState,
+        loading,
         authTrigger
     };
 
     return (
         <AuthContext.Provider value={value}>
-            {children}
+            {!loading && children}
         </AuthContext.Provider>
     );
-};
-
-export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (context === null) {
-        throw new Error('useAuth must be used within an AuthProvider');
-    }
-    return context;
-};
-
-export default AuthContext;
+}

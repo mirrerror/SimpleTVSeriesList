@@ -6,7 +6,9 @@ import TVSeriesList from './components/TVSeriesList';
 import BackToTop from './components/BackToTop';
 import Login from './components/Login';
 import Register from './components/Register';
+import AdminPanel from './components/AdminPanel';
 import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedAdminRoute from './components/ProtectedAdminRoute';
 import { fetchSeries, createSeries, updateSeries, deleteSeries } from './services/TVSeriesApiService';
 import { isAuthenticated } from './services/AuthService';
 import { AuthProvider, useAuth } from './context/AuthContext';
@@ -214,6 +216,10 @@ export default function App() {
 
                         <Route element={<ProtectedRoute />}>
                             <Route path="/dashboard" element={<Dashboard />} />
+                        </Route>
+
+                        <Route element={<ProtectedAdminRoute />}>
+                            <Route path="/admin" element={<AdminPanel />} />
                         </Route>
 
                         <Route path="*" element={<Navigate to="/" />} />

@@ -56,10 +56,15 @@ export const login = async (email, password) => {
             const base64Url = token.split('.')[1];
             const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             const payload = JSON.parse(window.atob(base64));
-            localStorage.setItem('user', JSON.stringify({
+
+            const minimalUser = {
                 email: payload.sub,
-                username: payload.username || email.split('@')[0]
-            }));
+                username: payload.username || email.split('@')[0],
+            };
+
+            localStorage.setItem('user', JSON.stringify(minimalUser));
+
+            await fetchUserDetails();
         } catch (e) {
             console.error('Error parsing JWT token:', e);
         }
@@ -67,6 +72,29 @@ export const login = async (email, password) => {
         return response.data;
     } catch (error) {
         console.error('Login error:', error);
+        throw error;
+    }
+};
+
+export const fetchUserDetails = async () => {
+    try {
+        const response = await authAxios.get('/api/users/me');
+        const userData = response.data;
+
+        const currentUser = {
+            id: userData.id,
+            email: userData.email,
+            username: userData.username,
+            role: userData.role
+        };
+
+        localStorage.setItem('user', JSON.stringify(currentUser));
+
+        window.currentUser = currentUser;
+
+        return currentUser;
+    } catch (error) {
+        console.error('Error fetching user details:', error);
         throw error;
     }
 };
@@ -82,19 +110,39 @@ export const isAuthenticated = () => {
     return new Date().getTime() < parseInt(expiresAt);
 };
 
-export const getCurrentUser = () => {
+export const getCurrentUser = async (forceRefresh = false) => {
     if (!isAuthenticated()) {
         return null;
     }
 
     const userStr = localStorage.getItem('user');
-    return userStr ? JSON.parse(userStr) : null;
+    const user = userStr ? JSON.parse(userStr) : null;
+
+    if (forceRefresh || (user && !user.role)) {
+        return await fetchUserDetails();
+    }
+
+    if (user) {
+        window.currentUser = user;
+    }
+
+    return user;
+};
+
+export const hasRole = async (role) => {
+    const user = await getCurrentUser();
+    return user && user.role === role;
+};
+
+export const isAdmin = async () => {
+    return await hasRole('ADMIN');
 };
 
 export const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('expiresAt');
     localStorage.removeItem('user');
+    window.currentUser = null;
 };
 
 export const updateApiService = () => {
@@ -112,6 +160,9 @@ export default {
     logout,
     isAuthenticated,
     getCurrentUser,
+    hasRole,
+    isAdmin,
     updateApiService,
-    authAxios
+    authAxios,
+    fetchUserDetails
 };

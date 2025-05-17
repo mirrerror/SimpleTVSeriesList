@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { logout } from '../services/AuthService';
 import ThemeToggle from './ThemeToggle';
@@ -33,6 +33,29 @@ export default function Header({ onLogout }) {
             <Link to="/" className="text-lg font-bold text-black dark:text-white">TV Series Tracker</Link>
 
             <div className="flex items-center space-x-4">
+                {authenticated && user?.role === 'ADMIN' && (
+                    <Link
+                        to="/admin"
+                        className="text-sm px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-700 flex items-center"
+                    >
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="h-4 w-4 mr-1"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+                            />
+                        </svg>
+                        Admin
+                    </Link>
+                )}
+
                 <ThemeToggle />
 
                 {authenticated ? (
@@ -42,6 +65,11 @@ export default function Header({ onLogout }) {
                             className="flex items-center space-x-1 text-sm px-3 py-1 rounded hover:bg-gray-100 dark:hover:bg-zinc-700"
                         >
                             <span className="hidden sm:inline font-medium">{user?.username || 'User'}</span>
+                            {user?.role === 'ADMIN' && (
+                                <span className="hidden sm:inline-flex ml-1 px-1.5 py-0.5 text-xs rounded-full bg-fuchsia-100 text-fuchsia-800 dark:bg-fuchsia-900 dark:text-fuchsia-300">
+                                    Admin
+                                </span>
+                            )}
                             <svg
                                 xmlns="http://www.w3.org/2000/svg"
                                 className="h-4 w-4"
@@ -60,6 +88,15 @@ export default function Header({ onLogout }) {
                                 <div className="px-4 py-2 text-sm text-gray-700 dark:text-gray-200 border-b dark:border-zinc-700">
                                     Signed in as <span className="font-semibold">{user?.email}</span>
                                 </div>
+                                {user?.role === 'ADMIN' && (
+                                    <Link
+                                        to="/admin"
+                                        onClick={() => setShowDropdown(false)}
+                                        className="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700"
+                                    >
+                                        Admin Panel
+                                    </Link>
+                                )}
                                 <button
                                     onClick={handleLogout}
                                     className="w-full text-left block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-zinc-700"

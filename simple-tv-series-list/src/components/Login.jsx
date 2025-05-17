@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { login } from '../services/AuthService';
+import { login, fetchUserDetails } from '../services/AuthService';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
@@ -18,7 +18,11 @@ export default function Login() {
 
         try {
             await login(email, password);
-            updateAuthState(true);
+
+            const userData = await fetchUserDetails();
+
+            updateAuthState(true, userData);
+
             navigate('/dashboard');
         } catch (err) {
             setError(
