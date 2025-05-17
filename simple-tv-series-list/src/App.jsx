@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import TVSeriesForm from './components/TVSeriesForm';
@@ -9,17 +9,17 @@ import Register from './components/Register';
 import ProtectedRoute from './components/ProtectedRoute';
 import { fetchSeries, createSeries, updateSeries, deleteSeries } from './services/TVSeriesApiService';
 import { isAuthenticated } from './services/AuthService';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
 
-export default function App() {
+function Dashboard() {
     const [series, setSeries] = useState([]);
     const [editingSeries, setEditingSeries] = useState(null);
-    const [isMobile, setIsMobile] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isDataLoaded, setIsDataLoaded] = useState(false);
     const [forceRefresh, setForceRefresh] = useState(0);
+    const { authTrigger } = useAuth();
     const [pagination, setPagination] = useState({
         page: 0,
         size: 10,
@@ -31,55 +31,43 @@ export default function App() {
     });
 
     useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
+        const controller = new AbortController();
+
+        const fetchData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const data = await fetchSeries(
+                    pagination.page,
+                    pagination.size,
+                    pagination.sortBy,
+                    pagination.sortDirection,
+                    pagination.status
+                );
+
+                if (!controller.signal.aborted) {
+                    setSeries(data.content);
+                    setPagination(prevPagination => ({
+                        ...prevPagination,
+                        totalPages: data.pagination.totalPages,
+                        totalElements: data.pagination.totalElements
+                    }));
+                    setIsDataLoaded(true);
+                    setLoading(false);
+                }
+            } catch (err) {
+                if (!controller.signal.aborted) {
+                    console.error('Failed to load series:', err);
+                    setError('Failed to load TV series. Please try again later.');
+                    setLoading(false);
+                }
+            }
         };
 
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
+        fetchData();
 
-    useEffect(() => {
-        if (isAuthenticated()) {
-            const controller = new AbortController();
-
-            const fetchData = async () => {
-                try {
-                    setLoading(true);
-                    setError(null);
-                    const data = await fetchSeries(
-                        pagination.page,
-                        pagination.size,
-                        pagination.sortBy,
-                        pagination.sortDirection,
-                        pagination.status
-                    );
-
-                    if (!controller.signal.aborted) {
-                        setSeries(data.content);
-                        setPagination(prevPagination => ({
-                            ...prevPagination,
-                            totalPages: data.pagination.totalPages,
-                            totalElements: data.pagination.totalElements
-                        }));
-                        setIsDataLoaded(true);
-                        setLoading(false);
-                    }
-                } catch (err) {
-                    if (!controller.signal.aborted) {
-                        console.error('Failed to load series:', err);
-                        setError('Failed to load TV series. Please try again later.');
-                        setLoading(false);
-                    }
-                }
-            };
-
-            fetchData();
-
-            return () => controller.abort();
-        }
-    }, [pagination.page, pagination.size, pagination.sortBy, pagination.sortDirection, pagination.status, forceRefresh]);
+        return () => controller.abort();
+    }, [pagination.page, pagination.size, pagination.sortBy, pagination.sortDirection, pagination.status, forceRefresh, authTrigger]);
 
     const handlePaginationChange = (newPagination) => {
         setPagination(prevPagination => ({
@@ -158,57 +146,58 @@ export default function App() {
         }
     };
 
-    const Dashboard = () => {
-        return (
-            <div className="max-w-4xl mx-auto" style={{ paddingTop: '60px' }}>
-                {error && (
-                    <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
-                        {error}
-                    </div>
-                )}
-
-                <div className="mb-4 sm:mb-6">
-                    <TVSeriesForm
-                        onAdd={addSeries}
-                        editSeries={editingSeries}
-                        onUpdate={updateSeriesData}
-                        isMobile={isMobile}
-                    />
+    return (
+        <div className="max-w-4xl mx-auto" style={{ paddingTop: '60px' }}>
+            {error && (
+                <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded">
+                    {error}
                 </div>
+            )}
 
-                {loading && (
-                    <div className="flex justify-center my-8">
-                        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
-                    </div>
-                )}
-
-                {!loading && (
-                    <TVSeriesList
-                        series={series}
-                        onRate={rateSeries}
-                        onRemove={removeSeries}
-                        onEdit={editSeries}
-                        isMobile={isMobile}
-                        pagination={pagination}
-                        onPaginationChange={handlePaginationChange}
-                    />
-                )}
+            <div className="mb-4 sm:mb-6">
+                <TVSeriesForm
+                    onAdd={addSeries}
+                    editSeries={editingSeries}
+                    onUpdate={updateSeriesData}
+                    isMobile={window.innerWidth < 768}
+                />
             </div>
-        );
-    };
+
+            {loading && (
+                <div className="flex justify-center my-8">
+                    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-fuchsia-500"></div>
+                </div>
+            )}
+
+            {!loading && (
+                <TVSeriesList
+                    series={series}
+                    onRate={rateSeries}
+                    onRemove={removeSeries}
+                    onEdit={editSeries}
+                    isMobile={window.innerWidth < 768}
+                    pagination={pagination}
+                    onPaginationChange={handlePaginationChange}
+                />
+            )}
+        </div>
+    );
+}
+
+export default function App() {
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const handleLogout = () => {
-        setIsDataLoaded(false);
-        setSeries([]);
-        setPagination({
-            page: 0,
-            size: 10,
-            sortBy: 'status',
-            sortDirection: 'desc',
-            status: 'all',
-            totalPages: 0,
-            totalElements: 0
-        });
     };
 
     return (
