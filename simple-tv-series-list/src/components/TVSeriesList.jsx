@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import defaultImage from '../assets/default-series-image.jpg';
 
 export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobile, pagination, onPaginationChange }) {
-    const [statusFilter, setStatusFilter] = useState('all');
-
     const handleSortDirectionChange = (e) => {
         onPaginationChange({
             ...pagination,
@@ -21,7 +19,11 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
     };
 
     const handleStatusFilterChange = (e) => {
-        setStatusFilter(e.target.value);
+        onPaginationChange({
+            ...pagination,
+            status: e.target.value,
+            page: 0
+        });
     };
 
     const handlePageChange = (newPage) => {
@@ -40,10 +42,6 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
             page: 0
         });
     };
-
-    const filteredSeries = series.filter((s) =>
-        statusFilter === 'all' || s.status === statusFilter
-    );
 
     const SeriesCard = ({ series: s, onRemove, onEdit }) => {
         const handleImageError = (e) => {
@@ -153,7 +151,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
         );
     };
 
-    const noSeriesFound = filteredSeries.length === 0;
+    const noSeriesFound = series.length === 0;
     const hasItems = pagination.totalElements > 0;
 
     return (
@@ -168,15 +166,15 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                 </svg>
                             </div>
                             <select
-                                value={statusFilter}
+                                value={pagination.status || 'all'}
                                 onChange={handleStatusFilterChange}
                                 className="pl-9 pr-3 py-1.5 rounded-l-md border-r-0 border focus:ring-0 focus:border-fuchsia-500 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                                 aria-label="Filter by status"
                             >
                                 <option value="all">All Statuses</option>
-                                <option value="Watched">Watched</option>
-                                <option value="Watching">Watching</option>
-                                <option value="Plan to Watch">Plan to Watch</option>
+                                <option value="WATCHED">Watched</option>
+                                <option value="WATCHING">Watching</option>
+                                <option value="PLAN_TO_WATCH">Plan to Watch</option>
                             </select>
 
                             <div className="absolute left-[10.5rem] text-gray-400 flex items-center pointer-events-none">
@@ -288,18 +286,18 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                             {pagination.totalElements !== undefined ? (
                                 <span>
-                                    Showing {Math.min(pagination.size, filteredSeries.length)} of {pagination.totalElements} {pagination.totalElements === 1 ? 'series' : 'series'}
+                                    Showing {Math.min(pagination.size, series.length)} of {pagination.totalElements} {pagination.totalElements === 1 ? 'series' : 'series'}
                                 </span>
                             ) : (
                                 <span>
-                                    {filteredSeries.length} {filteredSeries.length === 1 ? 'series' : 'series'} found
+                                    {series.length} {series.length === 1 ? 'series' : 'series'} found
                                 </span>
                             )}
                         </div>
                     </div>
 
                     <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        {filteredSeries.map(s => (
+                        {series.map(s => (
                             <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
                         ))}
                     </div>

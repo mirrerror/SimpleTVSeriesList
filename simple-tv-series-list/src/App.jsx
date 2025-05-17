@@ -25,6 +25,7 @@ export default function App() {
         size: 10,
         sortBy: 'status',
         sortDirection: 'desc',
+        status: 'all',
         totalPages: 0,
         totalElements: 0
     });
@@ -51,7 +52,8 @@ export default function App() {
                         pagination.page,
                         pagination.size,
                         pagination.sortBy,
-                        pagination.sortDirection
+                        pagination.sortDirection,
+                        pagination.status
                     );
 
                     if (!controller.signal.aborted) {
@@ -77,7 +79,7 @@ export default function App() {
 
             return () => controller.abort();
         }
-    }, [pagination.page, pagination.size, pagination.sortBy, pagination.sortDirection, forceRefresh]);
+    }, [pagination.page, pagination.size, pagination.sortBy, pagination.sortDirection, pagination.status, forceRefresh]);
 
     const handlePaginationChange = (newPagination) => {
         setPagination(prevPagination => ({
@@ -203,6 +205,7 @@ export default function App() {
             size: 10,
             sortBy: 'status',
             sortDirection: 'desc',
+            status: 'all',
             totalPages: 0,
             totalElements: 0
         });

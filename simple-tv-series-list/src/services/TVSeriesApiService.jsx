@@ -2,23 +2,22 @@ import { authAxios } from './AuthService';
 
 const API_URL = '/api/series';
 
-export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDirection = 'desc') => {
+export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDirection = 'desc', status = '') => {
     try {
-        console.log('Fetching series with params:', { page, size, sortBy, sortDirection });
+        console.log('Fetching series with params:', { page, size, sortBy, sortDirection, status });
         const response = await authAxios.get(API_URL, {
             params: {
                 page,
                 size,
                 sortBy,
-                sortDirection
+                sortDirection,
+                status: status !== 'all' ? status : ''
             }
         });
 
         console.log('Raw API response:', response.data);
 
-        // Check if response.data exists and has the expected structure
         if (response.data) {
-            // Handle the response format which is an object with series, totalPages, and totalElements
             const seriesArray = response.data.series || [];
             const totalPages = response.data.totalPages || 0;
             const totalElements = response.data.totalElements || 0;
@@ -33,6 +32,7 @@ export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDi
                     size,
                     sortBy,
                     sortDirection,
+                    status,
                     totalPages,
                     totalElements
                 }
@@ -46,6 +46,7 @@ export const fetchSeries = async (page = 0, size = 10, sortBy = 'status', sortDi
                     size,
                     sortBy,
                     sortDirection,
+                    status,
                     totalPages: 0,
                     totalElements: 0
                 }
