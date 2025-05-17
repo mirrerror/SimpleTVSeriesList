@@ -9,8 +9,8 @@ import Register from './components/Register';
 import AdminPanel from './components/AdminPanel';
 import ProtectedRoute from './components/ProtectedRoute';
 import ProtectedAdminRoute from './components/ProtectedAdminRoute';
+import PublicOnlyRoute from './components/PublicOnlyRoute';
 import { fetchSeries, createSeries, updateSeries, deleteSeries } from './services/TVSeriesApiService';
-import { isAuthenticated } from './services/AuthService';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import './index.css';
 
@@ -209,10 +209,12 @@ export default function App() {
                     <Header onLogout={handleLogout} />
 
                     <Routes>
-                        <Route path="/" element={isAuthenticated() ? <Navigate to="/dashboard" /> : <Navigate to="/login" />} />
+                        <Route path="/" element={<Navigate to="/dashboard" />} />
 
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
+                        <Route element={<PublicOnlyRoute />}>
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                        </Route>
 
                         <Route element={<ProtectedRoute />}>
                             <Route path="/dashboard" element={<Dashboard />} />
