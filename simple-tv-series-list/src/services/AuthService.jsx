@@ -4,6 +4,8 @@ const API_URL = '/api/auth';
 
 export const authAxios = axios.create();
 
+export const tokenExpiredEvent = new CustomEvent('jwt-expired');
+
 authAxios.interceptors.request.use(config => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -15,11 +17,15 @@ authAxios.interceptors.request.use(config => {
 authAxios.interceptors.response.use(
     response => response,
     error => {
-        if (error.response && error.response.status === 401) {
-            localStorage.removeItem('token');
-            localStorage.removeItem('expiresAt');
-            localStorage.removeItem('user');
-            window.location.href = '/login';
+        if (
+            (error.response && error.response.status === 401) ||
+            (error.response && error.response.status === 403 &&
+                error.response?.data?.message?.includes('JWT expired'))
+        ) {
+            console.log('Token expired, logging out');
+            logout();
+            window.dispatchEvent(tokenExpiredEvent);
+            window.location.href = '/login?expired=true';
         }
         return Promise.reject(error);
     }

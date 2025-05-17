@@ -30,6 +30,8 @@ export function AuthProvider({ children }) {
                     }
                 } catch (error) {
                     console.error("Failed to get user data:", error);
+                    setAuthenticated(false);
+                    setUser(null);
                 }
             }
 
