@@ -100,7 +100,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded-full">
                             📅 {new Date(s.dateAdded).toLocaleDateString()}
                         </span>
-                        {s.rating && (
+                        {s.rating && s.status !== 'Watched' && (
                             <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded-full">
                                 ⭐ {s.rating}/10
                             </span>
@@ -119,7 +119,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         </p>
                     )}
                 </div>
-                {s.status === 'Watched' && !s.rating && (
+                {s.status === 'Watched' && (
                     <div className="mt-2">
                         <select
                             value={s.rating || ''}
