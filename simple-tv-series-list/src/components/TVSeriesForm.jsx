@@ -158,13 +158,13 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
     return (
         <div className="mb-4 bg-gray-50 dark:bg-zinc-800 rounded-lg shadow border border-gray-200 dark:border-zinc-700 overflow-hidden">
             <div
-                className="px-4 py-3 flex justify-between items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700"
+                className="px-3 sm:px-4 py-3 flex justify-between items-center cursor-pointer transition-colors hover:bg-gray-100 dark:hover:bg-zinc-700"
                 onClick={!isEditing ? toggleExpand : undefined}
             >
-                <h2 className="text-lg font-bold flex items-center">
+                <h2 className="text-base sm:text-lg font-bold flex items-center">
                     {isEditing ? 'Edit Series' : 'Add New Series'}
                     {!isEditing && (
-                        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">
+                        <span className="ml-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             {isExpanded ? '(click to collapse)' : '(click to expand)'}
                         </span>
                     )}
@@ -172,7 +172,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                 {!isEditing && (
                     <button
                         type="button"
-                        className="text-xl font-bold transition-transform duration-200 ease-in-out"
+                        className="text-lg sm:text-xl font-bold transition-transform duration-200 ease-in-out"
                         style={{ transform: isExpanded ? 'rotate(0deg)' : 'rotate(90deg)' }}
                         onClick={(e) => {
                             e.stopPropagation();
@@ -187,14 +187,14 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
             <div
                 className="overflow-hidden transition-all duration-300 ease-in-out"
                 style={{
-                    maxHeight: isExpanded ? '500px' : '0',
+                    maxHeight: isExpanded ? '800px' : '0',
                     opacity: isExpanded ? 1 : 0
                 }}
             >
-                <form onSubmit={handleSubmit} className="px-4 pb-4">
-                    <div className="grid gap-x-3 gap-y-2">
-                        <div className="grid grid-cols-12 gap-3">
-                            <div className="col-span-6 sm:col-span-5">
+                <form onSubmit={handleSubmit} className="px-3 sm:px-4 pb-4">
+                    <div className="grid gap-x-2 sm:gap-x-3 gap-y-2">
+                        <div className="grid grid-cols-12 gap-2 sm:gap-3">
+                            <div className="col-span-12 sm:col-span-5">
                                 <label className="text-xs font-medium">
                                     Title <span className="text-red-500">*</span>
                                 </label>
@@ -205,7 +205,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                                 />
                                 {errors.title && <p className="text-xs text-red-500">{errors.title}</p>}
                             </div>
-                            <div className="col-span-3 sm:col-span-4">
+
+                            <div className="col-span-7 sm:col-span-4">
                                 <label className="text-xs font-medium">Genre</label>
                                 <input
                                     type="text" placeholder="Genre"
@@ -214,7 +215,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                                 />
                                 {errors.genre && <p className="text-xs text-red-500">{errors.genre}</p>}
                             </div>
-                            <div className="col-span-3">
+
+                            <div className="col-span-5 sm:col-span-3">
                                 <label className="text-xs font-medium">Status</label>
                                 <select
                                     value={status} onChange={e => setStatus(e.target.value)}
@@ -227,8 +229,8 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-12 gap-3 items-start">
-                            <div className="col-span-6">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-3 items-start">
+                            <div className="w-full">
                                 <label className="text-xs font-medium">Image Link</label>
                                 <input
                                     type="text" placeholder="Image URL"
@@ -237,7 +239,7 @@ export default function TVSeriesForm({ onAdd, editSeries, onUpdate, isMobile }) 
                                 />
                                 {errors.imageLink && <p className="text-xs text-red-500">{errors.imageLink}</p>}
                             </div>
-                            <div className="col-span-6">
+                            <div className="w-full">
                                 <label className="text-xs font-medium">Link</label>
                                 <input
                                     type="text" placeholder="Website URL"
