@@ -51,15 +51,15 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
         const isNew = new Date() - new Date(s.dateAdded) < 7 * 24 * 60 * 60 * 1000;
 
         return (
-            <div className="p-3 sm:p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 dark:border-zinc-700 dark:bg-zinc-800 flex flex-col h-full"
+            <div className="p-2 sm:p-4 border rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 dark:border-zinc-700 dark:bg-zinc-800 flex flex-col h-full"
                  style={{ position: 'static' }}>
-                <div className="flex justify-between items-center mb-3"
+                <div className="flex justify-between items-center mb-2 sm:mb-3"
                      style={{ position: 'relative' }}>
-                    <h2 className="text-lg sm:text-xl font-semibold truncate pr-2 flex items-center gap-2">
+                    <h2 className="text-base sm:text-xl font-semibold truncate pr-2 flex items-center gap-2">
                         {s.title}
                     </h2>
                 </div>
-                <div className="mt-1 w-full h-40 sm:h-48 md:h-56 overflow-hidden rounded-md relative">
+                <div className="w-full h-32 sm:h-40 md:h-56 overflow-hidden rounded-md relative">
                     <img
                         src={s.imageLink || defaultImage}
                         alt={`${s.title} image`}
@@ -69,52 +69,52 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                     />
                     {isNew && (
                         <span
-                            className="absolute top-2 left-2 bg-fuchsia-700 text-white text-xs px-2 py-0.5 rounded-full font-bold"
+                            className="absolute top-1 sm:top-2 left-1 sm:left-2 bg-fuchsia-700 text-white text-xs px-1.5 sm:px-2 py-0.5 rounded-full font-bold"
                         >
                             NEW
                         </span>
                     )}
-                    <div className="absolute bottom-2 left-2">
+                    <div className="absolute bottom-1 sm:bottom-2 left-1 sm:left-2">
                         {s.status === 'Watched' && (
-                            <span className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                            <span className="bg-green-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-bold">
                                 ✅ Watched
                             </span>
                         )}
                         {s.status === 'Watching' && (
-                            <span className="bg-blue-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                            <span className="bg-blue-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-bold">
                                 📺 Watching
                             </span>
                         )}
                         {s.status === 'Plan to Watch' && (
-                            <span className="bg-yellow-600 text-white px-2 py-0.5 rounded-full text-xs font-bold">
+                            <span className="bg-yellow-600 text-white px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-bold">
                                 ⌛ Plan to watch
                             </span>
                         )}
                     </div>
                 </div>
                 <div className="flex-grow">
-                    <div className="flex flex-wrap gap-2 mt-3">
-                        <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded-full">
+                    <div className="flex flex-wrap gap-1 sm:gap-2 mt-2 sm:mt-3">
+                        <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-1.5 sm:px-2 py-0.5 rounded-full">
                             🎭 {s.genre || 'No genre'}
                         </span>
-                        <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded-full">
+                        <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-1.5 sm:px-2 py-0.5 rounded-full">
                             📅 {new Date(s.dateAdded).toLocaleDateString()}
                         </span>
                         {s.rating && s.status !== 'Watched' && (
-                            <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-2 py-1 rounded-full">
+                            <span className="text-xs bg-gray-100 dark:bg-zinc-700 px-1.5 sm:px-2 py-0.5 rounded-full">
                                 ⭐ {s.rating}/10
                             </span>
                         )}
                     </div>
                     {s.link && (
-                        <p className="text-sm mt-2 overflow-hidden text-ellipsis">
+                        <p className="text-xs sm:text-sm mt-2 overflow-hidden text-ellipsis">
                             🔗 <a
                             className="text-fuchsia-700 hover:underline"
                             href={s.link}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
-                            {s.link.length > 30 ? s.link.substring(0, 30) + '...' : s.link}
+                            {s.link.length > 25 ? s.link.substring(0, 25) + '...' : s.link}
                         </a>
                         </p>
                     )}
@@ -124,7 +124,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         <select
                             value={s.rating || ''}
                             onChange={(e) => onRate(s.id, e.target.value)}
-                            className="block w-full border rounded px-3 py-1.5 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                            className="block w-full border rounded px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                         >
                             <option value="">Rate this series</option>
                             {[...Array(10)].map((_, i) => (
@@ -133,16 +133,16 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         </select>
                     </div>
                 )}
-                <div className="flex gap-2 mt-3">
+                <div className="flex gap-2 mt-2 sm:mt-3">
                     <button
                         onClick={() => onEdit(s)}
-                        className="flex-1 bg-blue-500 hover:bg-blue-600 px-2 sm:px-3 py-1.5 text-white rounded transition text-sm font-medium"
+                        className="flex-1 bg-blue-500 hover:bg-blue-600 px-1.5 sm:px-3 py-1 sm:py-1.5 text-white rounded transition text-xs sm:text-sm font-medium"
                     >
                         Edit
                     </button>
                     <button
                         onClick={() => onRemove(s.id)}
-                        className="flex-1 bg-red-500 hover:bg-red-600 px-2 sm:px-3 py-1.5 text-white rounded transition text-sm font-medium"
+                        className="flex-1 bg-red-500 hover:bg-red-600 px-1.5 sm:px-3 py-1 sm:py-1.5 text-white rounded transition text-xs sm:text-sm font-medium"
                     >
                         Remove
                     </button>
@@ -155,20 +155,20 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
     const hasItems = pagination.totalElements > 0;
 
     return (
-        <div className="space-y-4 sm:space-y-6">
-            <div className="bg-gray-50 dark:bg-zinc-800 rounded-lg p-4 shadow-sm">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                    <div className="flex items-center gap-2 md:col-span-4">
-                        <div className="inline-flex items-center rounded-md shadow-sm relative">
-                            <div className="absolute left-3 text-gray-400 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <div className="space-y-3 sm:space-y-6">
+            <div className="bg-gray-50 dark:bg-zinc-800 rounded-lg p-2 sm:p-4 shadow-sm">
+                <div className="grid grid-cols-1 gap-2 sm:gap-3">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                        <div className="w-full sm:w-auto inline-flex items-center rounded-md shadow-sm relative">
+                            <div className="absolute left-2 sm:left-3 text-gray-400 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
                                 </svg>
                             </div>
                             <select
                                 value={pagination.status || 'all'}
                                 onChange={handleStatusFilterChange}
-                                className="pl-9 pr-3 py-1.5 rounded-l-md border-r-0 border focus:ring-0 focus:border-fuchsia-500 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                                className="pl-7 sm:pl-9 pr-2 sm:pr-3 py-1 sm:py-1.5 rounded-l-md w-full sm:w-auto border-r-0 border focus:ring-0 focus:border-fuchsia-500 text-xs sm:text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                                 aria-label="Filter by status"
                             >
                                 <option value="all">All Statuses</option>
@@ -177,15 +177,15 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                 <option value="PLAN_TO_WATCH">Plan to Watch</option>
                             </select>
 
-                            <div className="absolute left-[10.5rem] text-gray-400 flex items-center pointer-events-none">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <div className="absolute left-[9rem] sm:left-[10.5rem] text-gray-400 flex items-center pointer-events-none">
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 sm:h-4 sm:w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                                 </svg>
                             </div>
                             <select
                                 value={pagination.sortBy}
                                 onChange={handleSortByChange}
-                                className="pl-9 pr-3 py-1.5 border-r-0 border-l-0 border focus:ring-0 focus:border-fuchsia-500 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                                className="pl-7 sm:pl-9 pr-2 sm:pr-3 py-1 sm:py-1.5 border-r-0 border-l-0 border focus:ring-0 focus:border-fuchsia-500 text-xs sm:text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                                 aria-label="Sort by"
                             >
                                 <option value="status">Status</option>
@@ -198,7 +198,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                             <select
                                 value={pagination.sortDirection}
                                 onChange={handleSortDirectionChange}
-                                className="pr-3 py-1.5 rounded-r-md border-l-0 border focus:ring-0 focus:border-fuchsia-500 text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
+                                className="pr-2 sm:pr-3 py-1 sm:py-1.5 rounded-r-md border-l-0 border focus:ring-0 focus:border-fuchsia-500 text-xs sm:text-sm bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white"
                                 aria-label="Sort direction"
                             >
                                 <option value="desc">↓ Desc</option>
@@ -206,14 +206,12 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                             </select>
                         </div>
 
-                        <div className="flex-grow"></div>
-
-                        <div className="flex items-center">
+                        <div className="flex items-center w-full sm:w-auto justify-end mt-1 sm:mt-0 sm:ml-auto">
                             <span className="text-xs text-gray-500 dark:text-gray-400 mr-2">Show:</span>
                             <select
                                 value={pagination.size}
                                 onChange={handleSizeChange}
-                                className="rounded-md border text-sm py-1 px-2 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white focus:border-fuchsia-500 focus:ring-0"
+                                className="rounded-md border text-xs sm:text-sm py-1 px-2 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white focus:border-fuchsia-500 focus:ring-0"
                                 aria-label="Items per page"
                             >
                                 <option value="5">5</option>
@@ -225,12 +223,12 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                     </div>
 
                     {hasItems && (
-                        <div className="flex items-center justify-center md:col-span-4 mt-2">
+                        <div className="flex items-center justify-center mt-1 sm:mt-2">
                             <div className="inline-flex items-center rounded-md shadow-sm">
                                 <button
                                     onClick={() => handlePageChange(0)}
                                     disabled={pagination.page === 0}
-                                    className="px-2 py-1 rounded-l-md border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600"
+                                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-l-md border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600 text-xs sm:text-sm"
                                     aria-label="First page"
                                 >
                                     &laquo;
@@ -238,13 +236,13 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                 <button
                                     onClick={() => handlePageChange(Math.max(0, pagination.page - 1))}
                                     disabled={pagination.page === 0}
-                                    className="px-2 py-1 border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600"
+                                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600 text-xs sm:text-sm"
                                     aria-label="Previous page"
                                 >
                                     &lsaquo;
                                 </button>
-                                <div className="px-4 py-1 border border-r-0 border-l-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white flex items-center justify-center min-w-[80px]">
-                                    <span className="text-sm font-medium">Page {pagination.page + 1}</span>
+                                <div className="px-2 sm:px-4 py-0.5 sm:py-1 border border-r-0 border-l-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white flex items-center justify-center min-w-[60px] sm:min-w-[80px]">
+                                    <span className="text-xs sm:text-sm font-medium">Page {pagination.page + 1}</span>
                                     {pagination.totalPages > 0 && (
                                         <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">
                                             of {pagination.totalPages}
@@ -254,7 +252,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                 <button
                                     onClick={() => handlePageChange(pagination.page + 1)}
                                     disabled={pagination.totalPages && pagination.page >= pagination.totalPages - 1}
-                                    className="px-2 py-1 border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600"
+                                    className="px-1.5 sm:px-2 py-0.5 sm:py-1 border border-r-0 bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600 text-xs sm:text-sm"
                                     aria-label="Next page"
                                 >
                                     &rsaquo;
@@ -263,7 +261,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                                     <button
                                         onClick={() => handlePageChange(pagination.totalPages - 1)}
                                         disabled={pagination.page >= pagination.totalPages - 1}
-                                        className="px-2 py-1 rounded-r-md border bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600"
+                                        className="px-1.5 sm:px-2 py-0.5 sm:py-1 rounded-r-md border bg-white dark:bg-zinc-700 dark:border-zinc-600 dark:text-white disabled:opacity-50 hover:bg-gray-50 dark:hover:bg-zinc-600 text-xs sm:text-sm"
                                         aria-label="Last page"
                                     >
                                         &raquo;
@@ -276,14 +274,14 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
             </div>
 
             {noSeriesFound ? (
-                <div className="text-center p-6 border rounded dark:border-zinc-700">
-                    <p className="text-gray-500 dark:text-gray-400">No TV series found for the selected filters</p>
+                <div className="text-center p-3 sm:p-6 border rounded dark:border-zinc-700">
+                    <p className="text-gray-500 dark:text-gray-400 text-sm sm:text-base">No TV series found for the selected filters</p>
                 </div>
             ) : (
                 <div>
                     <div className="flex justify-between items-center mb-2 sm:mb-3">
-                        <h2 className="text-xl sm:text-2xl font-bold">All TV Series</h2>
-                        <div className="text-sm text-gray-500 dark:text-gray-400">
+                        <h2 className="text-lg sm:text-2xl font-bold">All TV Series</h2>
+                        <div className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
                             {pagination.totalElements !== undefined ? (
                                 <span>
                                     Showing {Math.min(pagination.size, series.length)} of {pagination.totalElements} {pagination.totalElements === 1 ? 'series' : 'series'}
@@ -296,7 +294,7 @@ export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobil
                         </div>
                     </div>
 
-                    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid gap-2 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                         {series.map(s => (
                             <SeriesCard key={s.id} series={s} onRemove={onRemove} onEdit={onEdit} />
                         ))}
