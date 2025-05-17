@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import defaultImage from '../assets/default-series-image.jpg';
 
 export default function TVSeriesList({ series, onRate, onRemove, onEdit, isMobile, pagination, onPaginationChange }) {
