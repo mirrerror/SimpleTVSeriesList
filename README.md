@@ -11,12 +11,14 @@ A responsive React application for tracking your favorite TV series. This app al
 - **Persistent Storage**: All data is saved to localStorage for persistent experience
 - **Responsive Design**: Works seamlessly on mobile and desktop devices
 - **Dark/Light Theme**: Toggle between dark and light modes with automatic system preference detection
+- **Role System**: Give users additional permissions
+- **Admin Panel**: Control everything
+- **Auth System**: Allow users to register and login to save their information
 
 ## Tech Stack
 
 - React (with Hooks)
 - Tailwind CSS
-- Local Storage API
 - Vite
 
 ## Usage
@@ -67,14 +69,6 @@ npm run dev
 ```
 npm run build
 ```
-
-## Local Storage
-
-The application uses your browser's localStorage to save:
-- Your list of TV series
-- Your theme preference (dark/light)
-
-No data is sent to any server - everything is stored locally on your device.
 
 ## Responsive Design
 
