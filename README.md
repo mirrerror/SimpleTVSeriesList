@@ -37,6 +37,7 @@ A responsive React application for tracking your favorite TV series. This app al
 - **Rate**: For completed series, assign a rating from 1-10
 - **Sort**: Arrange by date added (newest or oldest first)
 - **Filter**: View series by watching status
+- **Pagination**: Separate your series into pages
 
 ### Theme Switching
 
