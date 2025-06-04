@@ -8,7 +8,7 @@ A responsive React application for tracking your favorite TV series. This app al
 - **Track Watching Status**: Categorize series as "Watching", "Watched", or "Plan to Watch"
 - **Rate Watched Shows**: Give ratings to series you've completed
 - **Sort & Filter**: Organize your list by date added and watching status
-- **Persistent Storage**: All data is saved to localStorage for persistent experience
+- **Persistent Storage**: All data is fetched from a backend service
 - **Responsive Design**: Works seamlessly on mobile and desktop devices
 - **Dark/Light Theme**: Toggle between dark and light modes with automatic system preference detection
 - **Role System**: Give users additional permissions
